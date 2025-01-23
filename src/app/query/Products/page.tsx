@@ -137,7 +137,7 @@ const ProductCards: React.FC = () => {
             key={product._id}
             className="bg-[#F4F5F7] shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow duration-300"
           >
-            <Link href={`/${product.slug}`}>
+            <Link href={`/product/${product.slug}`}>
               <Image
                 src={product.imageUrl}
                 alt={product.title}
