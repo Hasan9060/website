@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { client } from '@/sanity/lib/client';
-import sanityClient from "@sanity/client";
+import { createClient } from '@sanity/client';
 import Asgaardproduct from '@/app/query/Asgaardproduct/page';
 import { useCartContext } from '@/context/CartContext';
 import Swal from 'sweetalert2';
 
-
-const sanity = sanityClient({
-  projectId: "2srh4ekv",
-  dataset: "productions",
-  token: "skz6lWFJkAgpfrjXgwK8Tb6UBsTpRcSwzsQawON5Qps118XQdODrtVLdyXySTgJqC7rhPUKAOzb9prGs2aORcV0IICFN6pLKCLW2G0P7u5rExc8E92fzYp0UMuro6VpCzm51svtpWMCniHWaEiZAeJApDrYyIXgO5Uar4GLM2QPxFsswwZnU",
+// Sanity Client Setup
+const client = createClient({
+  projectId: '2srh4ekv',
+  dataset: 'productions',
+  apiVersion: '2023-01-01',
   useCdn: true,
+  token: 'skz6lWFJkAgpfrjXgwK8Tb6UBsTpRcSwzsQawON5Qps118XQdODrtVLdyXySTgJqC7rhPUKAOzb9prGs2aORcV0IICFN6pLKCLW2G0P7u5rExc8E92fzYp0UMuro6VpCzm51svtpWMCniHWaEiZAeJApDrYyIXgO5Uar4GLM2QPxFsswwZnU',
 });
 
 // Product Interface
@@ -35,23 +35,22 @@ interface PageProps {
 export default function Page({ params: { slug } }: PageProps) {
   const { addToCart } = useCartContext();
   const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
-  const [quantity, setQuantity] = useState<number>(1);
-  const [selectedColor, setSelectedColor] = useState<string>('#816DFA');
+  const [loading, setLoading] = useState(true);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState('#816DFA');
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        setLoading(true);
-        const query = `*[_type=='product' && slug.current==$slug]{
+        const query = `*[_type == "product" && slug.current == $slug][0]{
           _id,
           title,
           price,
           description,
           "imageUrl": productImage.asset->url
-        }[0]`;
-        const fetchedProduct: Product | null = await client.fetch(query, { slug });
+        }`;
+        const fetchedProduct = await client.fetch(query, { slug });
         setProduct(fetchedProduct);
       } catch (error) {
         console.error('Error fetching product:', error);
@@ -63,208 +62,81 @@ export default function Page({ params: { slug } }: PageProps) {
     fetchProduct();
   }, [slug]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (!product) return <div>Product not found</div>;
 
-  if (!product) {
-    return <div>Product not found</div>;
-  }
-
-  const handleAddToCart = (product: Product) => {
-    addToCart({ ...product, quantity });
-
-    Swal.fire({
-      title: 'Added to Cart!',
-      text: `${product.title} has been added to your cart.`,
-      icon: 'success',
-      showConfirmButton: false,
-      timer: 3000,
-      toast: true,
-      position: 'top-end',
-      background: '#F9F1E7',
-      iconColor: '#816DFA',
-      customClass: {
-        popup: 'shadow-lg rounded-md',
-      },
-    });
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart({ ...product, quantity });
+      Swal.fire({
+        title: 'Added to Cart!',
+        text: `${product.title} has been added to your cart.`,
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+      });
+    }
   };
 
-  const incrementQuantity = () => setQuantity((prev) => prev + 1);
-  const decrementQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-
   return (
-    <>
-      {/* Navigation Bar */}
+    <div>
       <nav className="bg-[#F9F1E7] h-24 mt-20 flex items-center gap-8 pl-20">
-        <ul className="flex items-center gap-2 list-none">
-          <li><a href="/" className="text-[#333333]">Home</a></li>
+        <ul className="flex items-center gap-2">
+          <li><a href="/">Home</a></li>
           <li><Image src="/images/black-arr.png" alt="" width={20} height={20} /></li>
-          <li><a href="/shop" className="text-[#333333]">Shop</a></li>
+          <li><a href="/shop">Shop</a></li>
           <li><Image src="/images/black-arr.png" alt="" width={20} height={20} /></li>
-          <li><span className="text-[#333333]">{product.title}</span></li>
+          <li>{product.title}</li>
         </ul>
       </nav>
 
-      {/* Main Content */}
-      <div className="flex flex-col lg:flex-row items-start justify-evenly mt-16 px-4 lg:px-24 gap-12">
-        {/* Sidebar Thumbnails */}
+      <div className="flex flex-col lg:flex-row mt-16 px-4 lg:px-24 gap-12">
         <div className="flex flex-col gap-4">
-          {[1, 2, 3, 4].map((num) => (
-            <div key={num}>
-              <Image
-                src={product.imageUrl}
-                alt={`Thumbnail ${num}`}
-                width={76}
-                height={80}
-                className="w-20 h-20 object-contain"
-              />
-            </div>
+          {[1, 2, 3, 4].map((_, index) => (
+            <Image
+              key={index}
+              src={product.imageUrl}
+              alt={`Thumbnail ${index + 1}`}
+              width={76}
+              height={80}
+              className="w-20 h-20 object-contain"
+            />
           ))}
         </div>
 
-        {/* Product Image Container */}
-        <div className="w-full lg:w-1/2 h-auto flex items-center justify-center p-4 rounded-md">
+        <div className="w-full lg:w-1/2">
           <Image
             src={product.imageUrl}
             alt={product.title}
             width={500}
             height={600}
-            className="max-w-full h-auto"
           />
         </div>
 
-        {/* Product Details */}
         <div className="flex flex-col max-w-lg">
           <h1 className="text-4xl font-semibold mb-2">{product.title}</h1>
-          <span className="text-2xl text-[#333333]">$ {product.price}</span>
-
-          {/* Product Description */}
-          <p className="mt-6 text-sm lg:text-base">
-            {showFullDescription
-              ? product.description
-              : `${product.description.slice(0, 260)}...`}
-            <button
-              className="text-blue-700 underline ml-2"
-              onClick={() => setShowFullDescription(!showFullDescription)}
-            >
+          <span className="text-2xl">$ {product.price}</span>
+          <p>
+            {showFullDescription ? product.description : `${product.description.slice(0, 260)}...`}
+            <button onClick={() => setShowFullDescription(!showFullDescription)}>
               {showFullDescription ? 'Read Less' : 'Read More'}
             </button>
           </p>
 
-          {/* Size and Color Selection */}
-          <h2 className="mt-14 text-[#333333]">Size:</h2>
-          <div className="flex items-center gap-3 mt-4">
-            {['L', 'XL', 'XS'].map((size) => (
-              <button
-                key={size}
-                className="w-8 h-8 bg-[#F9F1E7] rounded flex items-center justify-center text-sm hover:bg-[#B88E2F] hover:text-white"
-              >
-                {size}
-              </button>
-            ))}
+          {/* Add to Cart Section */}
+          <div>
+            <button onClick={() => setQuantity((prev) => Math.max(prev - 1, 1))}>-</button>
+            <span>{quantity}</span>
+            <button onClick={() => setQuantity((prev) => prev + 1)}>+</button>
           </div>
-
-          <h2 className="mt-14 text-[#333333]">Color:</h2>
-          <div className="flex items-center gap-3 mt-4">
-            {['#816DFA', 'black', '#B88E2F'].map((color) => (
-              <div
-                key={color}
-                className={`w-8 h-8 rounded-full cursor-pointer ${
-                  selectedColor === color ? 'ring-2 ring-black' : ''
-                }`}
-                style={{ backgroundColor: color }}
-                onClick={() => setSelectedColor(color)}
-              ></div>
-            ))}
-          </div>
-
-          {/* Quantity and Actions */}
-          <div className="flex items-center gap-3 mt-6">
-            <div className="flex items-center border border-black rounded-2xl w-[123px] h-[64px]">
-              <button className="px-3" onClick={decrementQuantity}>-</button>
-              <span className="px-4">{quantity}</span>
-              <button className="px-3" onClick={incrementQuantity}>+</button>
-            </div>
-            <button
-              className="w-[120px] h-[64px] rounded-lg border border-black mt-4 sm:mt-0 sm:ml-3 bg-black text-white font-medium shadow-lg transition-transform transform hover:scale-105 hover:bg-gray-800 active:scale-95"
-              onClick={() => handleAddToCart(product)}
-            >
-              Add To Cart
-            </button>
-            <button className="w-52 h-16 bg-transparent text-black rounded-2xl border border-black flex items-center justify-center gap-2 mt-4 hover:bg-[#B88E2F] hover:text-white sm:mt-0 sm:ml-3">
-              <span>+</span>
-              <span>Compare</span>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="border-b btext-[#333333]] w-full mt-14"></div>
-          <div className="mt-8 flex items-center justify-start gap-8">
-            <div className="flex flex-col text-[#333333]">
-              <span className="font-semibold">SKU</span>
-              <span className="font-semibold">Category</span>
-              <span className="font-semibold">Tags</span>
-              <span className="font-semibold">Share</span>
-            </div>
-            <div className="flex flex-col text-[#333333]">
-              <span>: SS001</span>
-              <span>: Sofas</span>
-              <span>: Sofa, Chair, Home, Shop</span>
-              <div className="flex items-center justify-start gap-3">
-                :
-                {['fb', 'in', 'twi'].map((social) => (
-                  <Image
-                    key={social}
-                    src={`/images/${social}.png`}
-                    alt={social}
-                    width={20}
-                    height={20}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+          <button onClick={handleAddToCart}>Add To Cart</button>
         </div>
       </div>
 
-      {/* Related Products */}
-      <div className="w-full border-b btext-[#333333]] mt-20"></div>
-      <div className="h-[744px]">
-        <div className="flex flex-col sm:flex-row items-start justify-center gap-6 sm:gap-16 mt-10 text-[24px]">
-          <h1 className="font-semibold">Description</h1>
-          <span className="text-[#333333]">Additional Information</span>
-          <span className="text-[#333333]">Reviews [5]</span>
-        </div>
-
-        <div className="flex items-center flex-col mt-10">
-          <p className="text-[#333333] w-full sm:w-[1026px] h-auto sm:h-[48px] px-4">
-            Embodying the raw, wayward spirit of rock roll, the Kilburn portable active stereo speaker takes the unmistakable look and sound of Marshall, unplugs the chords, and takes the show on the road.
-          </p>
-          <br />
-          <p className="text-[#333333] w-full sm:w-[1026px] h-auto sm:h-[96px] px-4">
-            Weighing in under 7 pounds, the Kilburn is a lightweight piece of vintage-styled engineering. Setting the bar as one of the loudest speakers in its class, the Kilburn is a compact, stout-hearted hero with a well-balanced audio which boasts a clear midrange and extended highs for a sound that is both articulate and pronounced. The analogue knobs allow you to fine-tune the controls to your personal preferences while the guitar-influenced leather strap enables easy and stylish travel.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-6 sm:flex-row items-center justify-around mt-10">
-          <Image
-            src="/images/sofa-fir.png"
-            alt="sofa1"
-            width={605}
-            height={348}
-          />
-          <Image
-            src="/images/sofa2.png"
-            alt="sofa2"
-            width={605}
-            height={348}
-          />
-        </div>
-      </div>
-
-      <h1 className="text-[36px] font-semibold text-center mt-16">Related Products</h1>
+      <h1 className="text-center mt-16">Related Products</h1>
       <Asgaardproduct />
-    </>
+    </div>
   );
 }
