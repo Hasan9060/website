@@ -9,11 +9,11 @@ import Swal from 'sweetalert2';
 
 // Sanity Client Setup
 const client = createClient({
-  projectId: '2srh4ekv',
-  dataset: 'productions',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
   apiVersion: '2023-01-01',
   useCdn: true,
-  token: 'skz6lWFJkAgpfrjXgwK8Tb6UBsTpRcSwzsQawON5Qps118XQdODrtVLdyXySTgJqC7rhPUKAOzb9prGs2aORcV0IICFN6pLKCLW2G0P7u5rExc8E92fzYp0UMuro6VpCzm51svtpWMCniHWaEiZAeJApDrYyIXgO5Uar4GLM2QPxFsswwZnU',
+  token: process.env.SANITY_API_TOKEN!,
 });
 
 // Product Interface
