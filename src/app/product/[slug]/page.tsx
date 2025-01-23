@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { client } from '../../sanity/lib/client';
-import Asgaardproduct from '../query/Asgaardproduct/page';
+import { client } from '@/sanity/lib/client';
+import Asgaardproduct from '@/app/query/Asgaardproduct/page';
 import { useCartContext } from "@/context/CartContext";
 import Swal from "sweetalert2";
 
