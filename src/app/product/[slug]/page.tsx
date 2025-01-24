@@ -2,19 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { createClient } from '@sanity/client';
+import { client } from '@/sanity/lib/client';
 import Asgaardproduct from '@/app/query/Asgaardproduct/page';
 import { useCartContext } from '@/context/CartContext';
 import Swal from 'sweetalert2';
 
-// Sanity Client Setup
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION!,
-  useCdn: true,
-  token: process.env.SANITY_TOKEN, 
-});
 
 // Product Interface
 interface Product {
