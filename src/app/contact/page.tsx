@@ -1,8 +1,40 @@
-import React from "react";
+import React, { useRef, useState, FormEvent } from "react";
 import Image from "next/image";
 import Feature from "@/components/Feature";
+import emailjs from "@emailjs/browser";
 
-const ContactPage = () => {
+interface ContactFormFields {
+  your_name: string;
+  email_address: string;
+  subject: string;
+  message: string;
+}
+
+const ContactPage: React.FC = () => {
+  const form = useRef<HTMLFormElement | null>(null);
+  const [formStatus, setFormStatus] = useState<string>("");
+
+  const sendEmail = (e: FormEvent) => {
+    e.preventDefault();
+
+    if (form.current) {
+      emailjs
+        .sendForm("service_m1oh17w", "template_i1j3e5g", form.current, {
+          publicKey: "e_YWmh6uA0zJ5DtLb",
+        })
+        .then(
+          (result) => {
+            setFormStatus("SUCCESS");
+            console.log("SUCCESS!", result.text);
+          },
+          (error) => {
+            setFormStatus("FAILED");
+            console.log("FAILED...", error.text);
+          }
+        );
+    }
+  };
+
   return (
     <>
       <div>
@@ -29,22 +61,9 @@ const ContactPage = () => {
       <div className="flex flex-col lg:flex-row items-start justify-between mt-12 px-4 lg:px-16 gap-10">
         {/* Contact Information */}
         <div className="flex flex-col gap-8 lg:w-1/2">
-          {[
-            {
-              img: "/images/location.svg",
-              title: "Address",
-              desc: "236 5th SE Avenue, New York NY10000, United States",
-            },
-            {
-              img: "/images/call.svg",
-              title: "Phone",
-              desc: "Mobile: +(84) 546-6789\nHotline: +(84) 456-6789",
-            },
-            {
-              img: "/images/clock.svg",
-              title: "Working Time",
-              desc: "Monday-Friday: 9:00 - 22:00\nSaturday-Sunday: 9:00 - 21:00",
-            },
+          {[{ img: "/images/location.svg", title: "Address", desc: "236 5th SE Avenue, New York NY10000, United States" },
+            { img: "/images/call.svg", title: "Phone", desc: "Mobile: +(84) 546-6789\nHotline: +(84) 456-6789" },
+            { img: "/images/clock.svg", title: "Working Time", desc: "Monday-Friday: 9:00 - 22:00\nSaturday-Sunday: 9:00 - 21:00" }
           ].map((info, index) => (
             <div key={index} className="flex items-start gap-4">
               <Image
@@ -67,29 +86,27 @@ const ContactPage = () => {
         </div>
 
         {/* Contact Form */}
-        <div className="flex flex-col lg:w-1/2 gap-6">
-          {[
-            { label: "Your Name", placeholder: "Enter your name" },
-            { label: "Email Address", placeholder: "Enter your email" },
-            { label: "Subject", placeholder: "Enter subject (optional)" },
-            { label: "Message", placeholder: "Enter your message" },
+        <form ref={form} onSubmit={sendEmail} className="flex flex-col lg:w-1/2 gap-6">
+          {[{ label: "Your Name", placeholder: "Enter your name", name: "from_name" },
+            { label: "Email Address", placeholder: "Enter your email", name: "from_email" },
+            { label: "Subject", placeholder: "Enter subject (optional)", name: "subject" },
+            { label: "Message", placeholder: "Enter your message", name: "message" }
           ].map((field, index) => (
             <div key={index} className="flex flex-col">
-              <label
-                htmlFor={`field-${index}`}
-                className="text-[16px] font-semibold mb-2"
-              >
+              <label htmlFor={`field-${index}`} className="text-[16px] font-semibold mb-2">
                 {field.label}
               </label>
               {index === 3 ? (
                 <textarea
                   id={`field-${index}`}
+                  name={field.name}
                   placeholder={field.placeholder}
                   className="border border-gray-300 rounded-md px-4 py-3 w-full text-[14px] focus:ring-2 focus:ring-[#B88E2F] focus:outline-none resize-none min-h-[100px]"
                 />
               ) : (
                 <input
                   id={`field-${index}`}
+                  name={field.name}
                   type="text"
                   placeholder={field.placeholder}
                   className="border border-gray-300 rounded-md px-4 py-3 w-full text-[14px] focus:ring-2 focus:ring-[#B88E2F] focus:outline-none"
@@ -97,10 +114,22 @@ const ContactPage = () => {
               )}
             </div>
           ))}
-          <button className="w-full lg:w-[237px] h-[55px] bg-[#B88E2F] text-white rounded-md mt-4 flex items-center justify-center text-[16px] font-semibold hover:bg-[#946F27] transition duration-300">
+          <button
+            type="submit"
+            className="w-full lg:w-[237px] h-[55px] bg-[#B88E2F] text-white rounded-md mt-4 flex items-center justify-center text-[16px] font-semibold hover:bg-[#946F27] transition duration-300"
+          >
             Submit
           </button>
-        </div>
+        </form>
+
+        {/* Form Submission Status */}
+        {formStatus && (
+          <div
+            className={`mt-4 text-center text-lg font-semibold ${formStatus === "SUCCESS" ? "text-green-500" : "text-red-500"}`}
+          >
+            {formStatus === "SUCCESS" ? "Your message has been sent!" : "Something went wrong, please try again."}
+          </div>
+        )}
       </div>
 
       {/* Features Section */}
