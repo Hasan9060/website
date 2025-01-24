@@ -38,12 +38,14 @@ const Asgaardproduct: React.FC = () => {
         try {
             const query = `*[_type == "product"] [0...4] {
                 _id,
-                title,
-                price,
-                description,
-                discountPercentage,
-                "imageUrl": productImage.asset->url,
-                tags
+        title,
+        price,
+        description,
+        discountPercentage,
+        "imageUrl": productImage.asset->url,
+        tags,
+        category,
+        "slug": slug.current
             }`;
 
             const data = await sanity.fetch(query);

@@ -42,13 +42,14 @@ const ProductSearch = () => {
         const query = `
           *[_type == "product" && title match "${searchTerm}*"] {
             _id,
-            title,
-            price,
-            description,
-            discountPercentage,
-            "imageUrl": productImage.asset->url,
-            tags,
-            "slug": slug.current
+        title,
+        price,
+        description,
+        discountPercentage,
+        "imageUrl": productImage.asset->url,
+        tags,
+        category,
+        "slug": slug.current
           }`;
         const results = await client.fetch(query);
         setFilteredProducts(results);
@@ -96,6 +97,7 @@ const ProductSearch = () => {
                 key={product._id}
                 className="bg-[#F4F5F7] shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow duration-300"
               >
+                <Link href={`/product/${product.slug}`}>
                 <Image
                   src={product.imageUrl}
                   alt={product.title}
@@ -103,12 +105,13 @@ const ProductSearch = () => {
                   height={301}
                   className="w-full h-52 object-cover rounded-md cursor-pointer"
                 />
+                </Link>
                 <div className="mt-4">
-                <Link href={`/product/${product.slug}`}>
+                
                     <h2 className="text-[24px] font-semibold text-[#3A3A3A] mt-4 hover:underline">
                       {product.title}
                     </h2>
-                  </Link>
+                  
                   <p className="text-sm text-gray-600 line-clamp-1">{product.description}</p>
                   <div className="mt-2 flex items-center justify-between">
                     <p className="text-[20px] font-semibold">${product.price}</p>

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useSwipeable } from "react-swipeable"; // Import swipeable hooks
 
 export default function Home() {
   const images = [
@@ -36,23 +37,30 @@ export default function Home() {
     setCurrentImageIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
   };
 
+  const handlers = useSwipeable({
+    onSwipedLeft: goToNext, // Swipe left to go to the next image
+    onSwipedRight: goToPrevious, // Swipe right to go to the previous image
+    trackMouse: true, // Allow mouse tracking for desktop
+  });
+
   return (
     <div className="mt-11 flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">Explore 50+ Beautiful rooms inspiration</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center px-4">Explore 50+ Beautiful Room Inspirations</h1>
 
-      <div className="relative w-full max-w-2xl mb-6">
+      <div className="relative w-full max-w-2xl mb-6" {...handlers}> {/* Apply swipeable handlers */}
         <img
           src={images[currentImageIndex]}
           alt="Room Design"
           className="w-full h-96 object-cover rounded-lg shadow-lg"
         />
-      </div>
-      <div className="absolute top-1/2 left-4 transform -translate-y-1/2 cursor-pointer text-white bg-black bg-opacity-50 p-2 rounded-full" onClick={goToPrevious}>
+        {/* Navigation buttons for desktop */}
+        <div className="absolute top-1/2 left-4 transform -translate-y-1/2 cursor-pointer text-white bg-black bg-opacity-50 p-2 rounded-full sm:block hidden" onClick={goToPrevious}>
           &#8592;
         </div>
-        <div className="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer text-white bg-black bg-opacity-50 p-2 rounded-full" onClick={goToNext}>
+        <div className="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer text-white bg-black bg-opacity-50 p-2 rounded-full sm:block hidden" onClick={goToNext}>
           &#8594;
         </div>
+      </div>
 
       <button
         onClick={goToNext}
@@ -60,7 +68,6 @@ export default function Home() {
       >
         Explore Next Design
       </button>
-    
     </div>
   );
 }
