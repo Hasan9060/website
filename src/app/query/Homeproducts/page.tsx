@@ -39,13 +39,14 @@ const Homeproducts: React.FC = () => {
         try {
             const query = `*[_type == "product"] [0...8] {
                 _id,
-                title,
-                price,
-                description,
-                discountPercentage,
-                "imageUrl": productImage.asset->url,
-                tags
-                 "slug": slug.current
+        title,
+        price,
+        description,
+        discountPercentage,
+        "imageUrl": productImage.asset->url,
+        tags,
+        category,
+        "slug": slug.current
             }`;
 
             const data = await sanity.fetch(query);
