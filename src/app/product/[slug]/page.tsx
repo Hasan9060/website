@@ -23,6 +23,8 @@ interface Product {
   price: number;
   description: string;
   imageUrl: string;
+  category: string;
+  tags: string[];
 }
 
 // Props Interface
@@ -48,6 +50,8 @@ export default function Page({ params: { slug } }: PageProps) {
         title,
         price,
         description,
+        category,
+        tags,
         "imageUrl": productImage.asset->url,
       }[0]`;
       const fetchedProduct: Product | null = await client.fetch(query);
@@ -215,8 +219,8 @@ export default function Page({ params: { slug } }: PageProps) {
   </div>
             <div className="flex flex-col text-[#333333]">
             <span>: SS001</span>
-            <span>: Sofas</span>
-            <span>: Sofa, Chair, Home, Shop</span>
+            <span>: {product.category}</span>
+            <span>: {product.tags}</span>
               <div className="flex items-center justify-start gap-3">
                 :
                 {['fb', 'in', 'twi'].map((social) => (
