@@ -5,7 +5,7 @@ const client = createClient({
   projectId: "2srh4ekv",
   dataset: "productions",
   apiVersion: '2025-01-18',
-  useCdn: false, // Use `false` to always fetch fresh data
+  useCdn: true, // Use `false` to always fetch fresh data
   token: process.env.SANITY_API_TOKEN, // Securely use the token
 });
 
