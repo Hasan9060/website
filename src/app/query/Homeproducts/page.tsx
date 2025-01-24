@@ -45,6 +45,7 @@ const Homeproducts: React.FC = () => {
                 discountPercentage,
                 "imageUrl": productImage.asset->url,
                 tags
+                 "slug": slug.current
             }`;
 
             const data = await sanity.fetch(query);

@@ -18,6 +18,8 @@ const sanity = sanityClient({
 
 // Product Interface
 interface Product {
+  tags: string[];
+  category: string;
   _id: string;
   title: string;
   price: number;
@@ -50,6 +52,8 @@ export default function Page({ params: { slug } }: PageProps) {
         price,
         description,
         "imageUrl": productImage.asset->url,
+        tags,
+        category,
       }[0]`;
       const fetchedProduct: Product | null = await client.fetch(query);
       setProduct(fetchedProduct);
@@ -204,8 +208,8 @@ export default function Page({ params: { slug } }: PageProps) {
             </div>
             <div className="flex flex-col text-[#333333]">
               <span>: SS001</span>
-              <span>: Sofas</span>
-              <span>: Sofa, Chair, Home, Shop</span>
+              <span>: {product.category}</span>
+              <span>: {product.tags}</span>
               <div className="flex items-center justify-start gap-3">
                 :
                 {['fb', 'in', 'twi'].map((social) => (
