@@ -5,8 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCartContext } from "@/context/CartContext";
 import Swal from "sweetalert2";
-import { client } from '@/sanity/lib/client';
 
+const sanity = sanityClient({
+    projectId: '2srh4ekv',
+    dataset: 'productions',
+    token: 'skz6lWFJkAgpfrjXgwK8Tb6UBsTpRcSwzsQawON5Qps118XQdODrtVLdyXySTgJqC7rhPUKAOzb9prGs2aORcV0IICFN6pLKCLW2G0P7u5rExc8E92fzYp0UMuro6VpCzm51svtpWMCniHWaEiZAeJApDrYyIXgO5Uar4GLM2QPxFsswwZnU',
+    useCdn: true,
+});
 
 interface project {
     slug: any;
@@ -30,27 +35,27 @@ const Homeproducts: React.FC = () => {
     const { addToCart } = useCartContext();
 
     const fetchProducts = async () => {
-      try {
-        const query = `*[_type == "product"] [0...8] {
-          _id,
-          title,
-          price,
-          description,
-          discountPercentage,
-          "imageUrl": productImage.asset->url,
-          tags
-        }`;
-  
-        const data = await client.fetch(query);
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
+        try {
+            const query = `*[_type == "product"] [0...8] {
+                _id,
+                title,
+                price,
+                description,
+                discountPercentage,
+                "imageUrl": productImage.asset->url,
+                tags
+            }`;
+
+            const data = await sanity.fetch(query);
+            setProducts(data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
     };
-  
+
     React.useEffect(() => {
-      fetchProducts();
-    }, []);
+       fetchProducts();
+     }, []);
    
      const handleAddToCart = (product: any) => {
        addToCart({ ...product, quantity: 1 });
