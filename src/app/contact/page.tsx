@@ -1,3 +1,4 @@
+"use client"
 import React, { useRef, useState, FormEvent } from "react";
 import Image from "next/image";
 import Feature from "@/components/Feature";
