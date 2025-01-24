@@ -2,17 +2,20 @@
 import React from 'react';
 import sanityClient  from '@sanity/client';
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 
 const sanity = sanityClient({
-    projectId: '2srh4ekv',
-    dataset: 'productions',
-    token: 'skz6lWFJkAgpfrjXgwK8Tb6UBsTpRcSwzsQawON5Qps118XQdODrtVLdyXySTgJqC7rhPUKAOzb9prGs2aORcV0IICFN6pLKCLW2G0P7u5rExc8E92fzYp0UMuro6VpCzm51svtpWMCniHWaEiZAeJApDrYyIXgO5Uar4GLM2QPxFsswwZnU',
+    projectId: "2srh4ekv",
+    dataset: "productions",
+    apiVersion: '2025-01-18',
+    token:  process.env.SANITY_API_TOKEN,
     useCdn: true,
-});
+  });
 
 interface project {
+    slug: any;
     _id: string;
     title: string;
     price: number;
@@ -67,6 +70,7 @@ const Asgaardproduct: React.FC = () => {
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols gap-6'>
             {products.map((product)=>(
                 <div key={product._id} className='bg-[#F4F5F7] shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow duration-300'>
+               <Link href={`/product/${product.slug}`}>
                 <Image 
                 src= {product.imageUrl}
                 alt={product.title}
@@ -83,7 +87,8 @@ const Asgaardproduct: React.FC = () => {
                             <span className='text-red-500 text-sm'>-{product.discountPercentage}% oFF</span>
                         )}
                     </div>
-                </div>     
+                </div> 
+                </Link>    
                 </div>
                 
             ))}

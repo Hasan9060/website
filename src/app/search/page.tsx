@@ -104,7 +104,7 @@ const ProductSearch = () => {
                   className="w-full h-52 object-cover rounded-md cursor-pointer"
                 />
                 <div className="mt-4">
-                  <Link href={`/${product.slug}`}>
+                <Link href={`/product/${product.slug}`}>
                     <h2 className="text-[24px] font-semibold text-[#3A3A3A] mt-4 hover:underline">
                       {product.title}
                     </h2>
