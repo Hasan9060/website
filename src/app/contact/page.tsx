@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useRef, useState, FormEvent } from "react";
 import Image from "next/image";
 import Feature from "@/components/Feature";
@@ -38,6 +38,19 @@ const ContactPage: React.FC = () => {
 
   return (
     <>
+      {/* Form Status Notification */}
+      {formStatus && (
+        <div
+          className={`fixed top-4 left-1/2 transform -translate-x-1/2 p-4 text-lg font-semibold ${
+            formStatus === "SUCCESS" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+          } rounded-md shadow-lg z-50`}
+        >
+          {formStatus === "SUCCESS"
+            ? "Your message has been sent!"
+            : "Something went wrong, please try again."}
+        </div>
+      )}
+
       <div>
         <Image
           src={"/images/contact.png"}
@@ -122,15 +135,6 @@ const ContactPage: React.FC = () => {
             Submit
           </button>
         </form>
-
-        {/* Form Submission Status */}
-        {formStatus && (
-          <div
-            className={`mt-4 text-center text-lg font-semibold ${formStatus === "SUCCESS" ? "text-green-500" : "text-red-500"}`}
-          >
-            {formStatus === "SUCCESS" ? "Your message has been sent!" : "Something went wrong, please try again."}
-          </div>
-        )}
       </div>
 
       {/* Features Section */}
