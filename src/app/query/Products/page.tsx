@@ -8,11 +8,11 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 
 const sanity = sanityClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  apiVersion: "2025-01-18", // Use a specific API version for compatibility
-  useCdn: process.env.NODE_ENV === "production", // Use CDN only in production
-  token: process.env.SANITY_API_TOKEN, // Only used on the server side
+  projectId: "2srh4ekv",
+  dataset: "productions",
+  apiVersion: '2025-01-18',
+  token:  process.env.SANITY_API_TOKEN,
+  useCdn: true,
 });
 
 interface Project {
