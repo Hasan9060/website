@@ -29,7 +29,7 @@ const CheckOutPage = () => {
     console.log("Sending items:", items); // Debugging line
 
     try {
-      const response = await fetch("http://localhost:3000/api/checkout", {
+      const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ products: items }), // Send as 'products'
@@ -57,6 +57,7 @@ const CheckOutPage = () => {
   };
 
   return (
+    <>
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <Image
         src={"/images/checkout.png"}
@@ -98,6 +99,8 @@ const CheckOutPage = () => {
         </div>
       </div>
     </div>
+    <Feature />
+    </>
   );
 };
 
