@@ -1,4 +1,4 @@
-"use client";
+// CartContext.tsx
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
@@ -16,6 +16,7 @@ interface CartContextType {
   updateQuantity: (id: string, quantity: number) => void;
   removeFromCart: (id: string) => void;
   cartTotal: number;
+  clearCart: () => void;  // Add clearCart function to the type
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -43,11 +44,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       if (existingItem) {
         return prevCart.map((item) =>
           item._id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: item.quantity + product.quantity }
             : item
         );
       }
-      return [...prevCart, { ...product, quantity: 1 }];
+      return [...prevCart, { ...product }];
     });
   };
 
@@ -63,11 +64,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     setCart((prevCart) => prevCart.filter((item) => item._id !== id));
   };
 
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");  // Remove from localStorage
+  };
+
   const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, updateQuantity, removeFromCart, cartTotal }}
+      value={{ cart, addToCart, updateQuantity, removeFromCart, clearCart, cartTotal }}
     >
       {children}
     </CartContext.Provider>

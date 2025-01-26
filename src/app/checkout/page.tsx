@@ -4,12 +4,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
 import { useCartContext } from "@/context/CartContext"; // Assuming you have this hook
-import Feature from "@/components/Feature";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const CheckOutPage = () => {
-  const { cart, cartTotal } = useCartContext();
+  const { cart, cartTotal, clearCart } = useCartContext();  // Destructure clearCart
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -47,6 +46,9 @@ const CheckOutPage = () => {
       if (stripe) {
         // Redirect to Stripe Checkout
         await stripe.redirectToCheckout({ sessionId: session.id });
+
+        // Clear cart after successful checkout redirection
+        clearCart();  // Clear the cart and localStorage
       }
     } catch (error) {
       console.error("Checkout failed:", error);
@@ -57,7 +59,6 @@ const CheckOutPage = () => {
   };
 
   return (
-    <>
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <Image
         src={"/images/checkout.png"}
@@ -99,8 +100,6 @@ const CheckOutPage = () => {
         </div>
       </div>
     </div>
-    <Feature />
-    </>
   );
 };
 
