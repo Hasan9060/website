@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartContext } from "@/context/CartContext";
+import { ClerkLoaded, SignInButton, useUser, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,6 +30,15 @@ const Navbar = () => {
   const calculateSubtotal = () =>
     cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  const { user } =useUser();
+  const createClerkPasskey =async () => {
+    try{ 
+      const response = await user?.createPasskey();
+      console.log(response);
+    } catch (err) {
+      console.error("Error:", JSON.stringify(err, null,2));
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 w-full h-[80px] bg-white flex items-center justify-between px-4 md:px-8 lg:px-16 shadow-md z-50">
@@ -66,6 +76,14 @@ const Navbar = () => {
         {/* Profile Dropdown */}
         
         <div>
+      {user ? (
+            
+            <div className="flex items-center space-x-2">
+            <UserButton />
+            </div>
+            ) : (
+              <SignInButton mode="modal" />
+            )}
         <div>
       </div>
     </div>
@@ -80,7 +98,9 @@ const Navbar = () => {
             className="w-6 h-6 cursor-pointer hover:opacity-80"
           />
         </Link>
-        
+        <ClerkLoaded>
+        {user && (
+          <>
         {/* Favorites */}
         <Link href="/asgaard-sofa">
           <Image
@@ -109,12 +129,24 @@ const Navbar = () => {
             </span>
           )}
         </div>
+        </>
+        )}
+
+</ClerkLoaded>
       </div>
     
       {/* Mobile Menu Icon */}
 <div className="md:hidden flex items-center gap-3">
   {/* Menu Button */}
  
+   {/* User Authentication */}
+   {user ? (
+    <div className="flex items-center space-x-2">
+      <UserButton />
+    </div>
+  ) : (
+    <SignInButton mode="modal" />
+  )}
   {/* Search */}
   <Link href="/search">
           <Image

@@ -4,6 +4,7 @@ import "./globals.css";
 import dynamic from "next/dynamic";
 import { Poppins } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
+import { ClerkProvider } from '@clerk/nextjs';
 import React from "react";
 
 const Navbar = React.lazy(() => import("@/components/Navbar"));
@@ -36,6 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider dynamic>
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased`}
@@ -47,5 +49,6 @@ export default function RootLayout({
           </CartProvider>
         </body>
       </html>
+    </ClerkProvider>
   );
 }
