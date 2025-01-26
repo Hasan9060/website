@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { loadStripe } from "@stripe/stripe-js";
 import { useCartContext } from "@/context/CartContext"; // Assuming you have this hook
+import Feature from "@/components/Feature";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -28,7 +29,7 @@ const CheckOutPage = () => {
     console.log("Sending items:", items); // Debugging line
 
     try {
-      const response = await fetch("/api/checkout", {
+      const response = await fetch("http://localhost:3000/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ products: items }), // Send as 'products'
@@ -56,7 +57,8 @@ const CheckOutPage = () => {
   };
 
   return (
-    <div>
+    <>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <Image
         src={"/images/checkout.png"}
         alt="checkout"
@@ -64,49 +66,41 @@ const CheckOutPage = () => {
         height={316}
         className="w-full h-auto mt-20"
       />
-      <div className="container mx-auto px-4 lg:px-12 mt-16">
-        <div className="flex flex-col lg:flex-row items-start justify-between gap-10">
-          <div className="w-full lg:w-[60%]">
-            <h1 className="text-[36px] font-semibold mb-5">Billing details</h1>
-            {/* Form fields for billing details */}
-          </div>
+      <div className="container mx-auto px-4 lg:px-12 mt-16 text-center">
+        <h1 className="text-3xl font-semibold mb-5">Review Your Order</h1>
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-[500px] mx-auto">
+          <h2 className="text-xl font-semibold mb-4">Products</h2>
+          {cart.map(item => (
+            <p key={item._id} className="text-lg mb-2">
+              {item.title} <span className="text-black">X {item.quantity}</span>
+            </p>
+          ))}
 
-          <div className="w-full lg:w-[35%]">
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col gap-3">
-                <h2 className="text-[24px] font-semibold">Product</h2>
-                {cart.map(item => (
-                  <p key={item._id} className="text-[#333333]">
-                    {item.title} <span className="text-black">X {item.quantity}</span>
-                  </p>
-                ))}
-                <span className="font-semibold">Subtotal</span>
-                <span className="font-semibold">Total</span>
-              </div>
-              <div className="flex flex-col gap-3 text-right">
-                <h2 className="text-[24px] font-semibold">Subtotal</h2>
-                <span>Rs. {cartTotal.toLocaleString()}</span>
-                <span>Rs. {cartTotal.toLocaleString()}</span>
-                <span className="text-[#B88E2F] text-[24px] font-semibold">Rs. {cartTotal.toLocaleString()}</span>
-              </div>
+          <div className="border-t border-gray-300 mt-4 pt-4">
+            <div className="flex justify-between mb-2">
+              <span className="font-semibold">Subtotal:</span>
+              <span className="font-semibold">Rs. {cartTotal.toLocaleString()}</span>
             </div>
-            <div className="border-b border-[#D9D9D9] w-full mt-6"></div>
-
-            {error && <div className="text-red-500 mt-4">{error}</div>}
-
-            <div className="mt-10">
-              <button
-                className="w-full lg:w-[318px] h-[64px] border border-black rounded-2xl"
-                onClick={handleCheckout}
-                disabled={loading}
-              >
-                {loading ? "Processing..." : "Place order with Stripe"}
-              </button>
+            <div className="flex justify-between mb-4">
+              <span className="font-semibold">Total:</span>
+              <span className="font-semibold">Rs. {cartTotal.toLocaleString()}</span>
             </div>
           </div>
+
+          {error && <div className="text-red-500 mt-4">{error}</div>}
+
+          <button
+            className="w-full h-[48px] bg-black text-white rounded-xl mt-8"
+            onClick={handleCheckout}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Place Order with Stripe"}
+          </button>
         </div>
       </div>
     </div>
+    <Feature />
+    </>
   );
 };
 
